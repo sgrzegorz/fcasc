@@ -22,7 +22,7 @@ while getopts "ah" o; do
     esac
 done
 
-while (($(ps aux | grep "$MINIO_HELM_DEPLOYMENT" | grep "port-forward" | wc -l) > 1 )); do
+while (($(ps aux | grep "$MINIO_HELM_DEPLOYMENT" | grep "port-forward" | wc -l) > 0 )); do
   PID_TO_REMOVE=$(ps aux | grep "$MINIO_HELM_DEPLOYMENT" | grep "port-forward" | awk '{print $2}' | head -n 1)
   echo "Removing port forwarding of $MINIO_HELM_DEPLOYMENT with pid $PID_TO_REMOVE"
   kill -9 $PID_TO_REMOVE
