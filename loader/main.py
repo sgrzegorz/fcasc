@@ -1,4 +1,9 @@
 from websocket import create_connection
+import time
+
+# Time to feed single file in seconds
+timeout = 5
+
 ws = create_connection("wss://ws-feed.exchange.coinbase.com")
 ws.send(
     """{
@@ -17,13 +22,18 @@ ws.send(
 }
 """
 )
+filename = f"data_{time.time()}.txt"
+f = open(filename, "a")
 print ("Sent")
 print ("Receiving...")
-result =  ws.recv()
-print (f"Received {result}")
-import time
+start = time.time()
 while True:
-    # time.sleep(3)
     result = ws.recv()
-    print(result)
+    f.write(result + '\n')
+    if (time.time() - start > timeout):
+        print(f"Creating new file {filename}")
+        f.close()
+        filename = f"data_{time.time()}.txt"
+        f = open(filename, "a")
+        start = time.time()
 ws.close()
