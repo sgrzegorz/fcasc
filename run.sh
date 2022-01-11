@@ -1,12 +1,17 @@
 #!/bin/bash
 
 # add minio helm charts repo
+echo "Adding minio helm chart repo..."
 helm repo add minio https://charts.min.io/
 
 # deploy minio standalone with small hardware requirements
+echo "Installing minio..."
 helm install --namespace default --set rootUser=rootuser,rootPassword=rootpass123 -f minio/values.yaml --generate-name minio/minio
 
+MINIO_HELM_DEPLOYMENT=$(helm list --filter=minio | awk '{print $1}' | tail -n 1)
+
 # export ports
-kubectl port-forward service/minio-1641933279 9000:9000 --namespace default &
-kubectl port-forward service/minio-1641933279-console 9001:9001 --namespace default &
+echo "Exporting ports..."
+kubectl port-forward service/$MINIO_HELM_DEPLOYMENT 9000:9000 --namespace default &
+kubectl port-forward service/$MINIO_HELM_DEPLOYMENT-console 9001:9001 --namespace default &
 
